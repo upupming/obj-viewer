@@ -12,26 +12,10 @@ else()
     set(CMAKE_TOOLCHAIN_FILE "./vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 endif()
 
-set(PROJECT "vscode-qt-qml-vcpkg-template")
+set(PROJECT "obj-viewer")
 project(${PROJECT} LANGUAGES CXX)
 
-list(APPEND CMAKE_PREFIX_PATH "C:/Qt/5.15.2/msvc2019_64")
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR}QuickCompiler)
-message(STATUS "QT_FOUND ${QT_FOUND}")
-message(STATUS "QT_CONFIG ${QT_CONFIG}")
-message(STATUS "QT_CONSIDERED_CONFIGS ${QT_CONSIDERED_CONFIGS}")
-message(STATUS "QT_CONSIDERED_VERSIONS ${QT_CONSIDERED_VERSIONS}")
-message(STATUS "Qt5Qml_INCLUDE_DIRS ${Qt5Qml_INCLUDE_DIRS}")
-message(STATUS "QT_VERSION_MAJOR ${QT_VERSION_MAJOR}")
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,7 +34,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
 file(GLOB_RECURSE SRC_LIST RELATIVE ${CMAKE_SOURCE_DIR}
-    "src/*.cpp"
+    "src/*.cc"
     "src/*.qrc")
 # https://stackoverflow.com/a/57928919/8242705
 file(GLOB_RECURSE HEADER_LIST RELATIVE ${CMAKE_SOURCE_DIR}
@@ -63,31 +47,20 @@ LIST(REMOVE_DUPLICATES header_dir_list)
 message(STATUS "SRC_LIST: ${SRC_LIST}")
 message(STATUS "header_dir_list: ${header_dir_list}")
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${PROJECT}
-        ${SRC_LIST}
-    )
-else()
-    if(ANDROID)
-        add_library(${PROJECT} SHARED
-            ${SRC_LIST}
-        )
-    else()
-        add_executable(${PROJECT}
-          ${SRC_LIST}
-        )
-    endif()
-endif()
-
-target_compile_definitions(${PROJECT}
-  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT}
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
+add_executable(${PROJECT}
+    ${SRC_LIST}
+)
 
 
-find_package(unofficial-sqlite3 CONFIG REQUIRED)
-target_link_libraries(${PROJECT} PRIVATE unofficial::sqlite3::sqlite3)
+find_package(tinyobjloader CONFIG REQUIRED)
+target_link_libraries(${PROJECT} PRIVATE tinyobjloader::tinyobjloader)
 
 target_include_directories(${PROJECT}
     PRIVATE
     ${header_dir_list})
+
+find_package(GLEW REQUIRED)
+target_link_libraries(${PROJECT} PRIVATE GLEW::GLEW)
+
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(${PROJECT} PRIVATE glfw)

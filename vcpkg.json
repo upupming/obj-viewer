@@ -1,13 +1,25 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-    "name": "vscode-qt-qml-vcpkg-template",
+    "name": "obj-viewer",
     "version-string": "0.0.1",
     "license": "MIT",
     "builtin-baseline": "030cfaa24de9ea1bbf0a4d9c615ce7312ba77af1",
     "dependencies": [
         {
-            "name": "sqlite3",
-            "version>=": "3.35.2",
+            "name": "tinyobjloader",
+            "version>=": "2.0.0-rc2",
+            "default-features": true,
+            "platform": "windows & x64"
+        },
+        {
+            "name": "glew",
+            "version>=": "2.1.0",
+            "default-features": true,
+            "platform": "windows & x64"
+        },
+        {
+            "name": "glfw3",
+            "version>=": "3.3.4",
             "default-features": true,
             "platform": "windows & x64"
         }
